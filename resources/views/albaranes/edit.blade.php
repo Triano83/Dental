@@ -28,8 +28,7 @@
                     </div>
                     <div class="col-md-3 mb-3">
                         <label for="fecha_envio" class="form-label">Fecha de Envío:</label>
-                        {{-- CORRECCIÓN: Asegurarse de que fecha_envio sea un objeto Carbon --}}
-                        <input type="date" name="fecha_envio" class="form-control" required value="{{ old('fecha_envio', \Carbon\Carbon::parse($albaran->fecha_envio)->format('Y-m-d')) }}">
+                        <input type="date" name="fecha_envio" class="form-control" required value="{{ old('fecha_envio', $albaran->fecha_envio->format('Y-m-d')) }}">
                     </div>
                     <div class="col-md-3 mb-3">
                         <label for="nombre_paciente" class="form-label">Nombre del Paciente:</label>

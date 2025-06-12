@@ -27,7 +27,9 @@ Route::resource('clientes', ClienteController::class);
 // Rutas para la gestión de productos (CRUD completo)
 Route::resource('productos', ProductoController::class);
 
-// Rutas PERSONALIZADAS para la gestión de albaranes (ya que no usas Route::resource aquí)
+// Rutas PERSONALIZADAS para la gestión de albaranes
+// Se usan rutas individuales para controlar el nombre del parámetro como {albaran}
+// Esto es importante para el Route Model Binding y para que los helpers route() funcionen
 Route::get('albaranes', [AlbaranController::class, 'index'])->name('albaranes.index');
 Route::get('albaranes/create', [AlbaranController::class, 'create'])->name('albaranes.create');
 Route::post('albaranes', [AlbaranController::class, 'store'])->name('albaranes.store');
@@ -38,7 +40,7 @@ Route::delete('albaranes/{albaran}', [AlbaranController::class, 'destroy'])->nam
 
 
 // Rutas para la gestión de facturas (CRUD y generación)
-// ¡IMPORTANTE: Definir las rutas específicas ANTES del Route::resource genérico!
+// ¡IMPORTANTE: Definir las rutas específicas (como generar-form) ANTES del Route::resource genérico!
 Route::get('facturas/generar-form', [FacturaController::class, 'showGenerateForm'])->name('facturas.generar.form');
 Route::post('facturas/generar', [FacturaController::class, 'generarFacturas'])->name('facturas.generar');
-Route::resource('facturas', FacturaController::class); // Definido al final para evitar conflictos
+Route::resource('facturas', FacturaController::class); // Definido al final para evitar conflictos de URL

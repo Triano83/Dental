@@ -12,7 +12,6 @@
             <span class="float-end">
                 @if ($albaran->factura_id)
                     <span class="badge bg-success">Facturado</span>
-                    {{-- Asegúrate de que esta ruta a facturas también use el nombre correcto del parámetro --}}
                     <a href="{{ route('facturas.show', ['factura' => $albaran->factura_id]) }}" class="btn btn-link btn-sm p-0 text-white">Ver Factura</a>
                 @else
                     <span class="badge bg-warning text-dark">Pendiente de Facturar</span>
@@ -78,10 +77,9 @@
         </div>
         <div class="card-footer text-end">
             @if (!$albaran->factura_id)
-                {{-- ENLACE 'EDITAR': Usa `albaran` como clave del array --}}
                 <a href="{{ route('albaranes.edit', ['albaran' => $albaran->id]) }}" class="btn btn-primary">Editar Albarán</a>
             @endif
-            {{-- ENLACE 'Descargar PDF': Usa `albaran` como clave del array --}}
+            {{-- ENLACE 'Descargar PDF': Puedes activarlo una vez implementemos la generación de PDFs --}}
             {{-- <a href="{{ route('albaranes.pdf', ['albaran' => $albaran->id]) }}" class="btn btn-info" target="_blank">Descargar PDF</a> --}}
         </div>
     </div>

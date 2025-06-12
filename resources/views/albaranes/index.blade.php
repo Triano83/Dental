@@ -29,19 +29,15 @@
                     <td>
                         @if ($albaran->factura_id)
                             <span class="badge bg-success">Sí</span>
-                            {{-- Asegúrate de que esta ruta a facturas también use el nombre correcto del parámetro --}}
                             <a href="{{ route('facturas.show', ['factura' => $albaran->factura_id]) }}" class="btn btn-link btn-sm p-0">Ver Factura</a>
                         @else
                             <span class="badge bg-warning text-dark">No</span>
                         @endif
                     </td>
                     <td>
-                        {{-- FORMULARIO DE ELIMINAR: Usa `albarane` como clave del array --}}
                         <form action="{{ route('albaranes.destroy', ['albaran' => $albaran->id]) }}" method="POST" style="display:inline;">
-                            {{-- ENLACE 'VER': Usa `albarane` como clave del array --}}
                             <a class="btn btn-info btn-sm" href="{{ route('albaranes.show', ['albaran' => $albaran->id]) }}">Ver</a>
                             @if (!$albaran->factura_id)
-                                {{-- ENLACE 'EDITAR': Usa `albarane` como clave del array --}}
                                 <a class="btn btn-primary btn-sm" href="{{ route('albaranes.edit', ['albaran' => $albaran->id]) }}">Editar</a>
                                 @csrf
                                 @method('DELETE')

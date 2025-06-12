@@ -58,7 +58,8 @@
                                 <td>{{ \Carbon\Carbon::parse($albaran->fecha_envio)->format('d/m/Y') }}</td>
                                 <td>{{ $albaran->nombre_paciente }}</td>
                                 <td>{{ number_format($albaran->total_albaran, 2, ',', '.') }}</td>
-                                <td><a href="{{ route('albaranes.show', ['albarane' => $albaran->id]) }}" class="btn btn-info btn-sm">Ver Albarán</a></td>
+                                {{-- **CORRECCIÓN AQUÍ:** La ruta a albaranes.show asume que espera 'albaran' como parámetro --}}
+                                <td><a href="{{ route('albaranes.show', ['albaran' => $albaran->id]) }}" class="btn btn-info btn-sm">Ver Albarán</a></td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -72,7 +73,7 @@
         </div>
         <div class="card-footer text-end">
             {{-- Opcional: Botón para descargar PDF de la factura --}}
-            {{-- <a class="btn btn-info" href="{{ route('facturas.pdf', $factura->id) }}" target="_blank">Descargar PDF</a> --}}
+            {{-- <a class="btn btn-info" href="{{ route('facturas.pdf', ['factura' => $factura->id]) }}" target="_blank">Descargar PDF</a> --}}
         </div>
     </div>
 @endsection

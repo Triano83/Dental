@@ -129,7 +129,4 @@ class FacturaController extends Controller
             return redirect()->back()->withInput()->with('error', 'Error al generar la factura: ' . $e->getMessage());
         }
     }
-
-    // No necesitamos métodos create, store, edit, update, destroy para facturas si se generan desde albaranes.
-    // Si en el futuro quieres poder editar/eliminar facturas directamente, se añadirían aquí.
 }

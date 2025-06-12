@@ -9,6 +9,7 @@ use App\Models\DetalleAlbaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon; // Asegúrate de que esta línea esté aquí
 
 class AlbaranController extends Controller
 {
@@ -90,7 +91,7 @@ class AlbaranController extends Controller
                 'factura_id' => null,
             ]);
 
-            $fechaFormato = \Carbon\Carbon::parse($albaran->fecha_envio)->format('Ymd');
+            $fechaFormato = Carbon::parse($albaran->fecha_envio)->format('Ymd');
             $albaran->codigo_albaran = $fechaFormato . str_pad($albaran->id, 2, '0', STR_PAD_LEFT);
             $albaran->save();
 
@@ -119,7 +120,7 @@ class AlbaranController extends Controller
     /**
      * Muestra los detalles de un albarán específico.
      */
-    public function show(Albaran $albaran) // Inyección de modelo implícita
+    public function show(Albaran $albaran)
     {
         $albaran->load('cliente', 'detalleAlbaranes.producto');
         $emisor = $this->emisor;
@@ -130,7 +131,7 @@ class AlbaranController extends Controller
     /**
      * Muestra el formulario para editar un albarán existente.
      */
-    public function edit(Albaran $albaran) // Inyección de modelo implícita
+    public function edit(Albaran $albaran)
     {
         $clientes = Cliente::orderBy('nombre_clinica')->get();
         $productos = Producto::orderBy('nombre')->get();
@@ -142,7 +143,7 @@ class AlbaranController extends Controller
     /**
      * Actualiza un albarán existente en la base de datos.
      */
-    public function update(Request $request, Albaran $albaran) // Inyección de modelo implícita
+    public function update(Request $request, Albaran $albaran)
     {
         $rules = [
             'cliente_id' => 'required|exists:clientes,id',
@@ -210,7 +211,7 @@ class AlbaranController extends Controller
     /**
      * Elimina un albarán de la base de datos.
      */
-    public function destroy(Albaran $albaran) // Inyección de modelo implícita
+    public function destroy(Albaran $albaran)
     {
         // Verificar si el albarán ya ha sido facturado
         if ($albaran->factura_id) {

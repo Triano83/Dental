@@ -24,9 +24,10 @@
                     <td>{{ $factura->cliente->nombre_clinica ?? 'Cliente Eliminado' }}</td>
                     <td>{{ number_format($factura->total_a_pagar, 2, ',', '.') }} €</td>
                     <td>
-                        <a class="btn btn-info btn-sm" href="{{ route('facturas.show', $factura->id) }}">Ver</a>
+                        {{-- **CORRECCIÓN AQUÍ:** La ruta a facturas.show asume que espera 'factura' como parámetro --}}
+                        <a class="btn btn-info btn-sm" href="{{ route('facturas.show', ['factura' => $factura->id]) }}">Ver</a>
                         {{-- Opcional: Botón para descargar PDF de la factura --}}
-                        {{-- <a class="btn btn-secondary btn-sm" href="{{ route('facturas.pdf', $factura->id) }}" target="_blank">PDF</a> --}}
+                        {{-- <a class="btn btn-secondary btn-sm" href="{{ route('facturas.pdf', ['factura' => $factura->id]) }}" target="_blank">PDF</a> --}}
                     </td>
                 </tr>
             @empty
