@@ -82,7 +82,7 @@
                 <a href="{{ route('albaranes.edit', ['albaran' => $albaran->id]) }}" class="btn btn-primary">Editar Albarán</a>
             @endif
             {{-- ENLACE 'Descargar PDF': Usa `albaran` como clave del array --}}
-            <a href="{{ route('albaranes.pdf', ['albaran' => $albaran->id]) }}" class="btn btn-info" target="_blank">Descargar PDF</a>
+            {{-- <a href="{{ route('albaranes.pdf', ['albaran' => $albaran->id]) }}" class="btn btn-info" target="_blank">Descargar PDF</a> --}}
         </div>
     </div>
 @endsection

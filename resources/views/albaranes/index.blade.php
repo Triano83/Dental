@@ -37,12 +37,12 @@
                     </td>
                     <td>
                         {{-- FORMULARIO DE ELIMINAR: Usa `albarane` como clave del array --}}
-                        <form action="{{ route('albaranes.destroy', ['albaran_id' => $albaran->id]) }}" method="POST" style="display:inline;">
+                        <form action="{{ route('albaranes.destroy', ['albaran' => $albaran->id]) }}" method="POST" style="display:inline;">
                             {{-- ENLACE 'VER': Usa `albarane` como clave del array --}}
-                            <a class="btn btn-info btn-sm" href="{{ route('albaranes.show', ['albaran_id' => $albaran->id]) }}">Ver</a>
+                            <a class="btn btn-info btn-sm" href="{{ route('albaranes.show', ['albaran' => $albaran->id]) }}">Ver</a>
                             @if (!$albaran->factura_id)
                                 {{-- ENLACE 'EDITAR': Usa `albarane` como clave del array --}}
-                                <a class="btn btn-primary btn-sm" href="{{ route('albaranes.edit', ['albaran_id' => $albaran->id]) }}">Editar</a>
+                                <a class="btn btn-primary btn-sm" href="{{ route('albaranes.edit', ['albaran' => $albaran->id]) }}">Editar</a>
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar este albarán?')">Eliminar</button>

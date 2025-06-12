@@ -3,14 +3,11 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\ProductoController;
-use App\Http\Controllers\AlbaranController; // Añade esto
-use App\Http\Controllers\FacturaController; // Añade esto
-
-
-
+use App\Http\Controllers\AlbaranController;
+use App\Http\Controllers\FacturaController;
 
 Route::get('/', function () {
-    return view('welcome'); // Puedes cambiar esto por tu dashboard principal más adelante
+    return view('welcome');
 });
 
 // Rutas para la gestión de clientes (CRUD completo)
@@ -20,8 +17,12 @@ Route::resource('clientes', ClienteController::class);
 Route::resource('productos', ProductoController::class);
 
 // Rutas para la gestión de albaranes (CRUD completo)
-// Route::resource('albaranes', AlbaranController::class); // Comentar o eliminar esta línea
+// Si bien estás usando un resource, lo tienes comentado y con rutas individuales.
+// Lo ideal es que si quieres todas las rutas CRUD que proporciona el resource,
+// descomentes la línea y uses el controlador con inyección implícita.
+// Si quieres rutas personalizadas, el nombre del parámetro debe coincidir con el de la inyección implícita.
 
+// Manteniendo tus rutas individuales, ajustamos el nombre del parámetro:
 // Listar albaranes
 Route::get('albaranes', [AlbaranController::class, 'index'])->name('albaranes.index');
 // Mostrar formulario de creación
@@ -29,13 +30,13 @@ Route::get('albaranes/create', [AlbaranController::class, 'create'])->name('alba
 // Almacenar nuevo albarán
 Route::post('albaranes', [AlbaranController::class, 'store'])->name('albaranes.store');
 // Mostrar detalles de un albarán específico
-Route::get('albaranes/{albaran_id}', [AlbaranController::class, 'show'])->name('albaranes.show');
+Route::get('albaranes/{albaran}', [AlbaranController::class, 'show'])->name('albaranes.show'); // <--- CAMBIO AQUÍ
 // Mostrar formulario de edición
-Route::get('albaranes/{albaran_id}/edit', [AlbaranController::class, 'edit'])->name('albaranes.edit');
+Route::get('albaranes/{albaran}/edit', [AlbaranController::class, 'edit'])->name('albaranes.edit'); // <--- CAMBIO AQUÍ
 // Actualizar albarán
-Route::put('albaranes/{albaran_id}', [AlbaranController::class, 'update'])->name('albaranes.update');
+Route::put('albaranes/{albaran}', [AlbaranController::class, 'update'])->name('albaranes.update'); // <--- CAMBIO AQUÍ
 // Eliminar albarán
-Route::delete('albaranes/{albaran_id}', [AlbaranController::class, 'destroy'])->name('albaranes.destroy');
+Route::delete('albaranes/{albaran}', [AlbaranController::class, 'destroy'])->name('albaranes.destroy'); // <--- CAMBIO AQUÍ
 
 
 // Rutas para la gestión de facturas (CRUD y generación)
