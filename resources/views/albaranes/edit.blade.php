@@ -6,7 +6,7 @@
         <a href="{{ route('albaranes.index') }}" class="btn btn-secondary">Volver al Listado</a>
     </div>
 
-    <form action="{{ route('albaranes.update', $albaran->id) }}" method="POST" id="formAlbaran">
+    <form action="{{ route('albaranes.update', ['albarane' => $albaran->id]) }}" method="POST" id="formAlbaran">
         @csrf
         @method('PUT')
 
@@ -70,17 +70,13 @@
                                     </select>
                                 </td>
                                 <td><input type="number" name="productos[{{ $index }}][unidades]" class="form-control units-input" min="1" value="{{ old('productos.' . $index . '.unidades', $detalle->unidades) }}" required></td>
-                                {{-- Campo visible con coma decimal para el usuario --}}
                                 <td><input type="text" class="form-control price-input" value="{{ number_format(old('productos.' . $index . '.precio_unitario', $detalle->precio_unitario), 2, ',', '.') }}" readonly></td>
-                                {{-- Campo visible con coma decimal para el usuario --}}
                                 <td><input type="text" class="form-control importe-input" value="{{ number_format(old('productos.' . $index . '.importe', $detalle->importe), 2, ',', '.') }}" readonly></td>
                                 <td><button type="button" class="btn btn-danger btn-sm remove-product-row">X</button></td>
-                                {{-- Campos ocultos para enviar valores con punto decimal al servidor --}}
                                 <input type="hidden" name="productos[{{ $index }}][precio_unitario]" class="hidden-price-input" value="{{ old('productos.' . $index . '.precio_unitario', $detalle->precio_unitario) }}">
                                 <input type="hidden" name="productos[{{ $index }}][importe]" class="hidden-importe-input" value="{{ old('productos.' . $index . '.importe', $detalle->importe) }}">
                             </tr>
                         @empty
-                            {{-- Esta sección se mantiene para cuando un albarán no tiene detalles (raro pero posible) --}}
                             <tr class="product-row">
                                 <td>
                                     <select name="productos[0][producto_id]" class="form-select product-select" required>
@@ -131,17 +127,14 @@
             const productDetailsTable = document.getElementById('product-details-table').getElementsByTagName('tbody')[0];
             let rowCount = productDetailsTable.rows.length;
 
-            // Función para formatear un número a 2 decimales con coma para la UI
             function formatToEuro(value) {
                 return parseFloat(value).toFixed(2).replace('.', ',');
             }
 
-            // Función para parsear un número con coma a float con punto para cálculos
             function parseEuroToFloat(value) {
-                return parseFloat(value.replace(',', '.')) || 0;
+                return parseFloat(String(value).replace(',', '.')) || 0;
             }
 
-            // Función para calcular totales
             function calculateTotals() {
                 let totalSumaProductos = 0;
                 productDetailsTable.querySelectorAll('.product-row').forEach(row => {
@@ -158,7 +151,6 @@
                 document.getElementById('total_albaran_display').value = formatToEuro(totalAlbaran);
             }
 
-            // Función para añadir una nueva fila de producto
             function addProductRow(initialData = {}) {
                 const newRow = productDetailsTable.insertRow();
                 newRow.className = 'product-row';
@@ -217,13 +209,11 @@
                     calculateTotals();
                 });
 
-                // Si hay datos iniciales, forzar el cálculo inicial de precio e importe
                 if (initialData.producto_id) {
                     productSelect.dispatchEvent(new Event('change'));
                 }
             }
 
-            // Inicializar event listeners y precargar valores para las filas existentes (desde PHP o old())
             productDetailsTable.querySelectorAll('.product-row').forEach((row, index) => {
                 const productSelect = row.querySelector('.product-select');
                 const unitsInput = row.querySelector('.units-input');
@@ -233,10 +223,8 @@
                 const hiddenPriceInput = row.querySelector('.hidden-price-input');
                 const hiddenImporteInput = row.querySelector('.hidden-importe-input');
 
-                // Establecer los valores ocultos iniciales con punto
                 hiddenPriceInput.value = parseEuroToFloat(priceDisplayInput.value).toFixed(2);
                 hiddenImporteInput.value = parseEuroToFloat(importeDisplayInput.value).toFixed(2);
-
 
                 productSelect.addEventListener('change', function() {
                     const selectedOption = this.options[this.selectedIndex];
@@ -261,21 +249,17 @@
                 });
             });
 
-            // Event listener para el botón de añadir producto
             addProductBtn.addEventListener('click', () => addProductRow());
 
-            // Event listener para el cambio de descuento
             const descuentoInput = document.getElementById('descuento');
             descuentoInput.addEventListener('input', calculateTotals);
 
-            // Manejar el submit del formulario para asegurar que el descuento se envía con punto decimal
             document.getElementById('formAlbaran').addEventListener('submit', function() {
                 if (descuentoInput) {
                     descuentoInput.value = parseEuroToFloat(descuentoInput.value).toFixed(2);
                 }
             });
 
-            // Calcular totales iniciales al cargar la página
             calculateTotals();
         });
     </script>

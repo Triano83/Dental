@@ -29,17 +29,19 @@
                     <td>
                         @if ($albaran->factura_id)
                             <span class="badge bg-success">Sí</span>
-                            <a href="{{ route('facturas.show', $albaran->factura_id) }}" class="btn btn-link btn-sm p-0">Ver Factura</a>
+                            {{-- Asegúrate de que esta ruta a facturas también use el nombre correcto del parámetro --}}
+                            <a href="{{ route('facturas.show', ['factura' => $albaran->factura_id]) }}" class="btn btn-link btn-sm p-0">Ver Factura</a>
                         @else
                             <span class="badge bg-warning text-dark">No</span>
                         @endif
                     </td>
                     <td>
-                        <form action="{{ route('albaranes.destroy', ['albarane' => $albaran->id]) }}" method="POST">
-                            {{-- Aquí se corrige la ruta para 'Ver' --}}
+                        {{-- FORMULARIO DE ELIMINAR: Usa `albarane` como clave del array --}}
+                        <form action="{{ route('albaranes.destroy', ['albarane' => $albaran->id]) }}" method="POST" style="display:inline;">
+                            {{-- ENLACE 'VER': Usa `albarane` como clave del array --}}
                             <a class="btn btn-info btn-sm" href="{{ route('albaranes.show', ['albarane' => $albaran->id]) }}">Ver</a>
                             @if (!$albaran->factura_id)
-                                {{-- Aquí se corrige la ruta para 'Editar' --}}
+                                {{-- ENLACE 'EDITAR': Usa `albarane` como clave del array --}}
                                 <a class="btn btn-primary btn-sm" href="{{ route('albaranes.edit', ['albarane' => $albaran->id]) }}">Editar</a>
                                 @csrf
                                 @method('DELETE')

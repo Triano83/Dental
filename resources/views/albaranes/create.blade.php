@@ -63,8 +63,6 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {{-- Las filas de productos se añadirán aquí con JavaScript --}}
-                        {{-- Una fila inicial siempre presente para el primer producto --}}
                         <tr class="product-row">
                             <td>
                                 <select name="productos[0][producto_id]" class="form-select product-select" required>
@@ -77,9 +75,12 @@
                                 </select>
                             </td>
                             <td><input type="number" name="productos[0][unidades]" class="form-control units-input" min="1" value="1" required></td>
-                            <td><input type="text" name="productos[0][precio_unitario]" class="form-control price-input" readonly></td>
-                            <td><input type="text" name="productos[0][importe]" class="form-control importe-input" readonly></td>
+                            <td><input type="text" class="form-control price-input" readonly></td>
+                            <td><input type="text" class="form-control importe-input" readonly></td>
                             <td><button type="button" class="btn btn-danger btn-sm remove-product-row">X</button></td>
+                            {{-- Campos ocultos para enviar valores con punto decimal al servidor --}}
+                            <input type="hidden" name="productos[0][precio_unitario]" class="hidden-price-input">
+                            <input type="hidden" name="productos[0][importe]" class="hidden-importe-input">
                         </tr>
                     </tbody>
                 </table>
@@ -110,7 +111,7 @@
         document.addEventListener('DOMContentLoaded', function () {
             const addProductBtn = document.getElementById('add-product-row');
             const productDetailsTable = document.getElementById('product-details-table').getElementsByTagName('tbody')[0];
-            let rowCount = productDetailsTable.rows.length; // Para el index del array de productos
+            let rowCount = productDetailsTable.rows.length;
 
             // Función para formatear un número a 2 decimales con coma para la UI
             function formatToEuro(value) {
@@ -119,7 +120,7 @@
 
             // Función para parsear un número con coma a float con punto para cálculos
             function parseEuroToFloat(value) {
-                return parseFloat(value.replace(',', '.')) || 0;
+                return parseFloat(String(value).replace(',', '.')) || 0;
             }
 
             // Función para calcular totales
@@ -130,14 +131,12 @@
                     totalSumaProductos += importe;
                 });
 
-                // Asignar el valor para mostrar con coma
                 document.getElementById('total_productos_display').value = formatToEuro(totalSumaProductos);
 
                 const descuento = parseEuroToFloat(document.getElementById('descuento').value);
                 let totalAlbaran = totalSumaProductos - descuento;
-                if (totalAlbaran < 0) totalAlbaran = 0; // Evitar negativos
+                if (totalAlbaran < 0) totalAlbaran = 0;
 
-                // Asignar el valor para mostrar con coma
                 document.getElementById('total_albaran_display').value = formatToEuro(totalAlbaran);
             }
 
@@ -146,8 +145,6 @@
                 const newRow = productDetailsTable.insertRow();
                 newRow.className = 'product-row';
 
-                // Generar el HTML de la fila. Los inputs que se envían tienen el nombre correcto.
-                // Los valores se formatean para la UI con coma, pero se manejarán para el envío con punto.
                 newRow.innerHTML = `
                     <td>
                         <select name="productos[${rowCount}][producto_id]" class="form-select product-select" required>
@@ -160,72 +157,64 @@
                         </select>
                     </td>
                     <td><input type="number" name="productos[${rowCount}][unidades]" class="form-control units-input" min="1" value="${initialData.unidades || 1}" required></td>
-                    <!-- Los inputs price-input e importe-input son readonly y solo para mostrar -->
-                    <!-- Sus valores se leerán y convertirán a punto antes de enviar el formulario -->
                     <td><input type="text" class="form-control price-input" value="${initialData.precio_unitario ? formatToEuro(initialData.precio_unitario) : ''}" readonly></td>
                     <td><input type="text" class="form-control importe-input" value="${initialData.importe ? formatToEuro(initialData.importe) : ''}" readonly></td>
                     <td><button type="button" class="btn btn-danger btn-sm remove-product-row">X</button></td>
-                    <!-- Campos ocultos para enviar los valores con punto decimal al servidor -->
                     <input type="hidden" name="productos[${rowCount}][precio_unitario]" class="hidden-price-input">
                     <input type="hidden" name="productos[${rowCount}][importe]" class="hidden-importe-input">
                 `;
-                rowCount++; // Incrementa el contador de filas
+                rowCount++;
 
-                // Añadir event listeners a los nuevos elementos
                 const productSelect = newRow.querySelector('.product-select');
                 const unitsInput = newRow.querySelector('.units-input');
                 const removeBtn = newRow.querySelector('.remove-product-row');
-                const priceDisplayInput = newRow.querySelector('.price-input'); // Campo visible
-                const importeDisplayInput = newRow.querySelector('.importe-input'); // Campo visible
-                const hiddenPriceInput = newRow.querySelector('.hidden-price-input'); // Campo oculto para envío
-                const hiddenImporteInput = newRow.querySelector('.hidden-importe-input'); // Campo oculto para envío
-
+                const priceDisplayInput = newRow.querySelector('.price-input');
+                const importeDisplayInput = newRow.querySelector('.importe-input');
+                const hiddenPriceInput = newRow.querySelector('.hidden-price-input');
+                const hiddenImporteInput = newRow.querySelector('.hidden-importe-input');
 
                 productSelect.addEventListener('change', function() {
                     const selectedOption = this.options[this.selectedIndex];
-                    const price = selectedOption.dataset.price; // Este viene ya con punto desde PHP
+                    const price = selectedOption.dataset.price;
 
                     priceDisplayInput.value = price ? formatToEuro(price) : '';
-                    hiddenPriceInput.value = price ? parseFloat(price).toFixed(2) : ''; // Guardar con punto para envío
+                    hiddenPriceInput.value = price ? parseFloat(price).toFixed(2) : '';
 
-                    unitsInput.dispatchEvent(new Event('input')); // Disparar input para recalcular importe
+                    unitsInput.dispatchEvent(new Event('input'));
                 });
 
                 unitsInput.addEventListener('input', function() {
-                    const price = parseEuroToFloat(priceDisplayInput.value); // Lee el valor visible
+                    const price = parseEuroToFloat(priceDisplayInput.value);
                     const units = parseInt(this.value) || 0;
                     const importe = price * units;
 
-                    importeDisplayInput.value = formatToEuro(importe); // Mostrar con coma
-                    hiddenImporteInput.value = importe.toFixed(2); // Guardar con punto para envío
+                    importeDisplayInput.value = formatToEuro(importe);
+                    hiddenImporteInput.value = importe.toFixed(2);
 
                     calculateTotals();
                 });
 
                 removeBtn.addEventListener('click', function() {
                     newRow.remove();
-                    calculateTotals(); // Recalcular después de eliminar
+                    calculateTotals();
                 });
 
-                // Si hay datos iniciales, forzar el cálculo inicial de precio e importe
                 if (initialData.producto_id) {
                     productSelect.dispatchEvent(new Event('change'));
                 }
             }
 
-            // Si hay datos de old() (después de un error de validación), rellenar las filas
             @if(old('productos'))
-                // Limpiar la fila inicial vacía antes de rellenar con old data
                 if (productDetailsTable.rows.length > 0 && productDetailsTable.rows[0].querySelector('.product-select').value === "") {
                     productDetailsTable.rows[0].remove();
-                    rowCount = 0; // Reset rowCount as we're rebuilding
+                    rowCount = 0;
                 }
 
                 @foreach(old('productos') as $index => $oldProduct)
                     addProductRow({
                         producto_id: {{ $oldProduct['producto_id'] ?? 'null' }},
                         unidades: {{ $oldProduct['unidades'] ?? '1' }},
-                        // Obtener precio_unitario e importe de Producto para asegurar el formato correcto desde PHP
+                        // Asegurar que los valores de old se pasen como números y se formateen a punto
                         precio_unitario: {{ \App\Models\Producto::find($oldProduct['producto_id'] ?? null)->precio ?? '0' }},
                         importe: ({{ \App\Models\Producto::find($oldProduct['producto_id'] ?? null)->precio ?? '0' }} * {{ $oldProduct['unidades'] ?? '1' }}).toFixed(2)
                     });
@@ -261,27 +250,17 @@
                 });
             @endif
 
-            // Event listener para el botón de añadir producto
             addProductBtn.addEventListener('click', () => addProductRow());
 
-            // Event listener para el cambio de descuento
-            document.getElementById('descuento').addEventListener('input', calculateTotals);
+            const descuentoInput = document.getElementById('descuento');
+            descuentoInput.addEventListener('input', calculateTotals);
 
-            // Antes de enviar el formulario, asegurarse de que los campos numéricos visibles
-            // que se usarán para los cálculos finales, se conviertan a punto decimal.
-            // Para `descuento` directamente en el input, el `type="number"` y el `step="0.01"`
-            // suelen manejar bien el formato, pero si hay problemas, puedes añadir un listener
-            // aquí para limpiar el valor antes de que la validación lo lea.
             document.getElementById('formAlbaran').addEventListener('submit', function() {
-                // Iterar sobre todos los campos de descuento para asegurarse que se envíen con punto
-                const descuentoInput = document.getElementById('descuento');
                 if (descuentoInput) {
-                    descuentoInput.value = parseEuroToFloat(descuentoInput.value);
+                    descuentoInput.value = parseEuroToFloat(descuentoInput.value).toFixed(2);
                 }
             });
 
-
-            // Calcular totales iniciales al cargar la página
             calculateTotals();
         });
     </script>

@@ -8,8 +8,7 @@ use App\Models\Producto;
 use App\Models\DetalleAlbaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator; // ¡IMPORTANTE: Añadir esta línea!
-
+use Illuminate\Support\Facades\Validator; // Asegúrate de que esta línea esté aquí
 
 class AlbaranController extends Controller
 {
@@ -26,8 +25,7 @@ class AlbaranController extends Controller
      */
     public function index()
     {
-        // Carga ansiosa para el cliente para evitar el problema N+1
-        $albaranes = Albaran::with('cliente')->latest()->get(); // Ordenar por los más recientes
+        $albaranes = Albaran::with('cliente')->latest()->get();
         return view('albaranes.index', compact('albaranes'));
     }
 
@@ -38,7 +36,7 @@ class AlbaranController extends Controller
     {
         $clientes = Cliente::orderBy('nombre_clinica')->get();
         $productos = Producto::orderBy('nombre')->get();
-        $emisor = $this->emisor; // Pasamos los datos del emisor a la vista
+        $emisor = $this->emisor;
 
         return view('albaranes.create', compact('clientes', 'productos', 'emisor'));
     }
@@ -48,47 +46,38 @@ class AlbaranController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $rules = [
             'cliente_id' => 'required|exists:clientes,id',
             'fecha_envio' => 'required|date',
             'nombre_paciente' => 'required|string|max:255',
             'descuento' => 'nullable|numeric|min:0',
-            'productos' => 'required|array|min:1', // Debe haber al menos un producto
+            'productos' => 'required|array|min:1',
             'productos.*.producto_id' => 'required|exists:productos,id',
             'productos.*.unidades' => 'required|integer|min:1',
-            // El precio unitario se toma de la BD, no se valida aquí directamente
-        ]);
+            'productos.*.precio_unitario' => 'required|numeric', // Validar campo oculto
+            'productos.*.importe' => 'required|numeric', // Validar campo oculto
+        ];
 
-        // Iniciar una transacción de base de datos
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
         DB::beginTransaction();
 
         try {
             $totalProductos = 0;
-            $descuentoAplicado = $request->input('descuento', 0); // Si no viene descuento, es 0
+            $descuentoAplicado = (float)$request->input('descuento', 0);
 
-            // Primero, calcula el total de productos para poder generar el código de albarán si es necesario
             foreach ($request->productos as $item) {
-                $producto = Producto::find($item['producto_id']);
-                $totalProductos += $producto->precio * $item['unidades'];
+                $totalProductos += (float)$item['importe'];
             }
 
-            // Calcula el total final del albarán
             $totalAlbaran = $totalProductos - $descuentoAplicado;
             if ($totalAlbaran < 0) {
-                 $totalAlbaran = 0; // Evitar totales negativos por descuentos excesivos
+                 $totalAlbaran = 0;
             }
-
-
-            // Generar el código de albarán (AAAAMMDD + ID)
-            // Para el ID, necesitamos el ID del albarán recién creado,
-            // lo cual es un poco complicado antes de la creación.
-            // Una estrategia común es generarlo después de la creación
-            // o usar un número consecutivo global o por día.
-            // Por simplicidad, por ahora usaremos un timestamp y el ID del albarán
-            // Podemos mejorar esto más tarde para un consecutivo por día/mes si es estricto.
-            // Para la primera versión, generaremos un ID simple o usaremos la fecha + un número consecutivo.
-            // La forma más robusta es obtener el último ID de albarán del día o del mes.
-            // Por ahora, usaremos Carbon para el prefijo de fecha y un valor que se actualizará.
 
             $albaran = Albaran::create([
                 'cliente_id' => $request->cliente_id,
@@ -97,38 +86,32 @@ class AlbaranController extends Controller
                 'descuento' => $descuentoAplicado,
                 'total_productos' => $totalProductos,
                 'total_albaran' => $totalAlbaran,
-                'codigo_albaran' => 'PENDIENTE_GENERAR', // Marcador temporal
-                'factura_id' => null, // Inicialmente null
+                'codigo_albaran' => 'PENDIENTE_GENERAR',
+                'factura_id' => null,
             ]);
 
-            // Ahora que tenemos el ID del albarán, generamos el código real.
             $fechaFormato = \Carbon\Carbon::parse($albaran->fecha_envio)->format('Ymd');
-            $albaran->codigo_albaran = $fechaFormato . str_pad($albaran->id, 2, '0', STR_PAD_LEFT); // AAAAMMDD + ID con 2 digitos
-
-            // Guardamos el código de albarán final
+            $albaran->codigo_albaran = $fechaFormato . str_pad($albaran->id, 2, '0', STR_PAD_LEFT);
             $albaran->save();
 
-
-            // Guardar los detalles del albarán
             foreach ($request->productos as $item) {
-                $producto = Producto::find($item['producto_id']);
                 DetalleAlbaran::create([
                     'albaran_id' => $albaran->id,
-                    'producto_id' => $producto->id,
-                    'nombre_producto' => $producto->nombre, // Copia del nombre
-                    'unidades' => $item['unidades'],
-                    'precio_unitario' => $producto->precio, // Copia del precio
-                    'importe' => $producto->precio * $item['unidades'],
+                    'producto_id' => $item['producto_id'],
+                    'nombre_producto' => Producto::find($item['producto_id'])->nombre,
+                    'unidades' => (int)$item['unidades'],
+                    'precio_unitario' => (float)$item['precio_unitario'],
+                    'importe' => (float)$item['importe'],
                 ]);
             }
 
-            DB::commit(); // Confirmar la transacción
+            DB::commit();
 
             return redirect()->route('albaranes.index')
                              ->with('success', 'Albarán creado exitosamente. Código: ' . $albaran->codigo_albaran);
 
         } catch (\Exception $e) {
-            DB::rollBack(); // Revertir la transacción en caso de error
+            DB::rollBack();
             return redirect()->back()->withInput()->with('error', 'Error al crear el albarán: ' . $e->getMessage());
         }
     }
@@ -138,23 +121,20 @@ class AlbaranController extends Controller
      */
     public function show(Albaran $albaran)
     {
-        // Carga ansiosa para el cliente y los detalles del albarán
         $albaran->load('cliente', 'detalleAlbaranes.producto');
-        $emisor = $this->emisor; // Pasamos los datos del emisor a la vista
+        $emisor = $this->emisor;
 
         return view('albaranes.show', compact('albaran', 'emisor'));
     }
 
     /**
      * Muestra el formulario para editar un albarán existente.
-     * Nota: La edición de albaranes puede ser compleja si ya están facturados o tienen un flujo de trabajo.
-     * Por simplicidad inicial, permitiremos la edición. Podrías restringirla más adelante.
      */
     public function edit(Albaran $albaran)
     {
         $clientes = Cliente::orderBy('nombre_clinica')->get();
         $productos = Producto::orderBy('nombre')->get();
-        $albaran->load('detalleAlbaranes'); // Cargar los detalles existentes
+        $albaran->load('detalleAlbaranes');
 
         return view('albaranes.edit', compact('albaran', 'clientes', 'productos'));
     }
@@ -164,7 +144,7 @@ class AlbaranController extends Controller
      */
     public function update(Request $request, Albaran $albaran)
     {
-        $request->validate([
+        $rules = [
             'cliente_id' => 'required|exists:clientes,id',
             'fecha_envio' => 'required|date',
             'nombre_paciente' => 'required|string|max:255',
@@ -172,28 +152,34 @@ class AlbaranController extends Controller
             'productos' => 'required|array|min:1',
             'productos.*.producto_id' => 'required|exists:productos,id',
             'productos.*.unidades' => 'required|integer|min:1',
-        ]);
+            'productos.*.precio_unitario' => 'required|numeric',
+            'productos.*.importe' => 'required|numeric',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
 
         DB::beginTransaction();
 
         try {
-            // Eliminar detalles de albaranes antiguos para el albarán actual
             $albaran->detalleAlbaranes()->delete();
 
             $totalProductos = 0;
-            $descuentoAplicado = $request->input('descuento', 0);
+            $descuentoAplicado = (float)$request->input('descuento', 0);
 
             foreach ($request->productos as $item) {
-                $producto = Producto::find($item['producto_id']);
                 DetalleAlbaran::create([
                     'albaran_id' => $albaran->id,
-                    'producto_id' => $producto->id,
-                    'nombre_producto' => $producto->nombre,
-                    'unidades' => $item['unidades'],
-                    'precio_unitario' => $producto->precio,
-                    'importe' => $producto->precio * $item['unidades'],
+                    'producto_id' => $item['producto_id'],
+                    'nombre_producto' => Producto::find($item['producto_id'])->nombre,
+                    'unidades' => (int)$item['unidades'],
+                    'precio_unitario' => (float)$item['precio_unitario'],
+                    'importe' => (float)$item['importe'],
                 ]);
-                $totalProductos += $producto->precio * $item['unidades'];
+                $totalProductos += (float)$item['importe'];
             }
 
             $totalAlbaran = $totalProductos - $descuentoAplicado;
@@ -201,7 +187,6 @@ class AlbaranController extends Controller
                  $totalAlbaran = 0;
             }
 
-            // Actualizar el albarán principal
             $albaran->update([
                 'cliente_id' => $request->cliente_id,
                 'fecha_envio' => $request->fecha_envio,
@@ -209,7 +194,6 @@ class AlbaranController extends Controller
                 'descuento' => $descuentoAplicado,
                 'total_productos' => $totalProductos,
                 'total_albaran' => $totalAlbaran,
-                // El código de albarán no se actualiza ya que es único y basado en la fecha de creación.
             ]);
 
             DB::commit();
@@ -228,14 +212,13 @@ class AlbaranController extends Controller
      */
     public function destroy(Albaran $albaran)
     {
-        // Opcional: Impedir la eliminación si el albarán ya está facturado.
         if ($albaran->factura_id) {
             return redirect()->back()->with('error', 'No se puede eliminar un albarán que ya ha sido facturado.');
         }
 
-        $albaran->delete(); // Esto también eliminará los detalles del albarán por `onDelete('cascade')`
+        $albaran->delete();
 
         return redirect()->route('albaranes.index')
                          ->with('success', 'Albarán eliminado exitosamente.');
     }
-} 
+}

@@ -12,7 +12,8 @@
             <span class="float-end">
                 @if ($albaran->factura_id)
                     <span class="badge bg-success">Facturado</span>
-                    <a href="{{ route('facturas.show', $albaran->factura_id) }}" class="btn btn-link btn-sm p-0 text-white">Ver Factura</a>
+                    {{-- Asegúrate de que esta ruta a facturas también use el nombre correcto del parámetro --}}
+                    <a href="{{ route('facturas.show', ['factura' => $albaran->factura_id]) }}" class="btn btn-link btn-sm p-0 text-white">Ver Factura</a>
                 @else
                     <span class="badge bg-warning text-dark">Pendiente de Facturar</span>
                 @endif
@@ -77,10 +78,10 @@
         </div>
         <div class="card-footer text-end">
             @if (!$albaran->factura_id)
-                {{-- Aquí se corrige la ruta para 'Editar' --}}
+                {{-- ENLACE 'EDITAR': Usa `albarane` como clave del array --}}
                 <a href="{{ route('albaranes.edit', ['albarane' => $albaran->id]) }}" class="btn btn-primary">Editar Albarán</a>
             @endif
-            {{-- Aquí podríamos añadir un botón para generar PDF --}}
+            {{-- ENLACE 'Descargar PDF': Usa `albarane` como clave del array --}}
             <a href="{{ route('albaranes.pdf', ['albarane' => $albaran->id]) }}" class="btn btn-info" target="_blank">Descargar PDF</a>
         </div>
     </div>
