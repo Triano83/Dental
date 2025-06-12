@@ -8,7 +8,7 @@ use App\Models\Producto;
 use App\Models\DetalleAlbaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator; // Asegúrate de que esta línea esté aquí
+use Illuminate\Support\Facades\Validator;
 
 class AlbaranController extends Controller
 {
@@ -54,8 +54,8 @@ class AlbaranController extends Controller
             'productos' => 'required|array|min:1',
             'productos.*.producto_id' => 'required|exists:productos,id',
             'productos.*.unidades' => 'required|integer|min:1',
-            'productos.*.precio_unitario' => 'required|numeric', // Validar campo oculto
-            'productos.*.importe' => 'required|numeric', // Validar campo oculto
+            'productos.*.precio_unitario' => 'required|numeric',
+            'productos.*.importe' => 'required|numeric',
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -119,7 +119,7 @@ class AlbaranController extends Controller
     /**
      * Muestra los detalles de un albarán específico.
      */
-    public function show(Albaran $albaran)
+    public function show(Albaran $albaran) // Inyección de modelo implícita
     {
         $albaran->load('cliente', 'detalleAlbaranes.producto');
         $emisor = $this->emisor;
@@ -130,7 +130,7 @@ class AlbaranController extends Controller
     /**
      * Muestra el formulario para editar un albarán existente.
      */
-    public function edit(Albaran $albaran)
+    public function edit(Albaran $albaran) // Inyección de modelo implícita
     {
         $clientes = Cliente::orderBy('nombre_clinica')->get();
         $productos = Producto::orderBy('nombre')->get();
@@ -142,7 +142,7 @@ class AlbaranController extends Controller
     /**
      * Actualiza un albarán existente en la base de datos.
      */
-    public function update(Request $request, Albaran $albaran)
+    public function update(Request $request, Albaran $albaran) // Inyección de modelo implícita
     {
         $rules = [
             'cliente_id' => 'required|exists:clientes,id',
@@ -210,12 +210,14 @@ class AlbaranController extends Controller
     /**
      * Elimina un albarán de la base de datos.
      */
-    public function destroy(Albaran $albaran)
+    public function destroy(Albaran $albaran) // Inyección de modelo implícita
     {
+        // Verificar si el albarán ya ha sido facturado
         if ($albaran->factura_id) {
             return redirect()->back()->with('error', 'No se puede eliminar un albarán que ya ha sido facturado.');
         }
 
+        // Eliminar el albarán (incluirá los detalles gracias a onDelete('cascade') en la migración)
         $albaran->delete();
 
         return redirect()->route('albaranes.index')

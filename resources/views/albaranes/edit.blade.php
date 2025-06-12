@@ -6,7 +6,7 @@
         <a href="{{ route('albaranes.index') }}" class="btn btn-secondary">Volver al Listado</a>
     </div>
 
-    <form action="{{ route('albaranes.update', ['albarane' => $albaran->id]) }}" method="POST" id="formAlbaran">
+    <form action="{{ route('albaranes.update', ['albaran' => $albaran->id]) }}" method="POST" id="formAlbaran">
         @csrf
         @method('PUT')
 

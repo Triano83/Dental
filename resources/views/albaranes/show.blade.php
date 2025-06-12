@@ -78,11 +78,11 @@
         </div>
         <div class="card-footer text-end">
             @if (!$albaran->factura_id)
-                {{-- ENLACE 'EDITAR': Usa `albarane` como clave del array --}}
-                <a href="{{ route('albaranes.edit', ['albarane' => $albaran->id]) }}" class="btn btn-primary">Editar Albarán</a>
+                {{-- ENLACE 'EDITAR': Usa `albaran` como clave del array --}}
+                <a href="{{ route('albaranes.edit', ['albaran' => $albaran->id]) }}" class="btn btn-primary">Editar Albarán</a>
             @endif
-            {{-- ENLACE 'Descargar PDF': Usa `albarane` como clave del array --}}
-            <a href="{{ route('albaranes.pdf', ['albarane' => $albaran->id]) }}" class="btn btn-info" target="_blank">Descargar PDF</a>
+            {{-- ENLACE 'Descargar PDF': Usa `albaran` como clave del array --}}
+            <a href="{{ route('albaranes.pdf', ['albaran' => $albaran->id]) }}" class="btn btn-info" target="_blank">Descargar PDF</a>
         </div>
     </div>
 @endsection
