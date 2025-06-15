@@ -211,26 +211,6 @@ El sistema define las siguientes rutas web para interactuar con los diferentes m
 
 -----
 
-## 📸 Capturas de Pantalla (Ejemplos)
-
-A continuación, se muestran algunas de las interfaces clave del sistema.
-
-#### **Listado de Albaranes**
-
-*Muestra todos los albaranes, su estado de facturación y las acciones rápidas.*
-\<img src="[enlace sospechoso eliminado]" alt="Listado de Albaranes" style="border-radius: 8px; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);"\>
-
-#### **Creación de un Nuevo Albarán**
-
-*Formulario dinámico para añadir productos, calcular totales y aplicar descuentos en tiempo real.*
-\<img src="[enlace sospechoso eliminado]" alt="Creación de Albarán" style="border-radius: 8px; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);"\>
-
-#### **Detalle de la Factura**
-
-*Vista completa de una factura, incluyendo los datos del emisor, receptor y la lista de albaranes que la componen.*
-\<img src="[enlace sospechoso eliminado]" alt="Detalle de Factura" style="border-radius: 8px; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);"\>
-
------
 
 \<p align="center" style="color: \#6c757d;"\>
 Este README fue generado para demostrar las capacidades del proyecto S.M. Dental.
