@@ -1,61 +1,252 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+Claro, aquí tienes una propuesta completa y detallada para el `README.md` de tu proyecto "S.M. Dental", utilizando la información de los ficheros que has proporcionado.
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+-----
 
-## About Laravel
+# S.M. Dental - Sistema de Facturación
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+> Sistema de gestión web desarrollado con Laravel para "S.M. Dental", diseñado para administrar de forma eficiente clientes, productos, y el ciclo completo de facturación desde la creación de albaranes hasta la generación de facturas finales.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Este proyecto nace de la necesidad de automatizar y organizar la gestión comercial de un laboratorio dental, permitiendo un seguimiento detallado de los trabajos enviados a las clínicas, los costes asociados y la facturación periódica.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## ✨ Características Principales
 
-## Learning Laravel
+El sistema cuenta con varios módulos interconectados que cubren todo el flujo de trabajo:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+  - **Gestión de Clientes (Clínicas):**
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+      - Crear, leer, actualizar y eliminar (CRUD) la información de las clínicas dentales.
+      - Validación de datos, incluyendo NIF único para evitar duplicados.
+      - Listado y vista detallada de cada cliente.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+  - **Gestión de Productos:**
 
-## Laravel Sponsors
+      - CRUD completo para los productos y servicios que ofrece el laboratorio.
+      - Campos para nombre y precio.
+      - Listado y vista detallada.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+  - **Gestión de Albaranes:**
 
-### Premium Partners
+      - Creación de nuevos albaranes de envío asociados a un cliente y un paciente.
+      - Generación de un `codigo_albaran` único basado en la fecha y el ID.
+      - Adición dinámica de múltiples productos al albarán, con cálculo automático de importes.
+      - Aplicación de descuentos sobre el total.
+      - Edición y eliminación de albaranes **siempre que no estén facturados**.
+      - Vista detallada del albarán con la información del emisor y el receptor.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+  - **Generación de Facturas:**
 
-## Contributing
+      - Interfaz para generar facturas agrupando múltiples albaranes de un cliente en un rango de fechas específico.
+      - Cálculo automático del total a pagar sumando los importes de los albaranes seleccionados.
+      - Generación de un `numero_factura` único y consecutivo por día.
+      - Los albaranes utilizados quedan marcados como "facturados", evitando su doble facturación.
+      - Listado y vista detallada de facturas generadas, incluyendo los albaranes que la componen.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 🛠️ Tecnologías y Herramientas
 
-## Code of Conduct
+Este proyecto se ha construido utilizando un stack de tecnologías moderno y robusto:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+| Tecnología | Versión/Tipo | Propósito |
+| :--- | :--- | :--- |
+| **PHP** | `^8.2` | Lenguaje de programación base. |
+| **Laravel** | `^12.0` | Framework principal del backend. |
+| **Bootstrap** | `5.3.3` | Framework CSS para el diseño de la interfaz de usuario principal. |
+| **Vite** | `^6.2.4` | Herramienta de compilación y empaquetado de assets del frontend. |
+| **MySQL / SQLite** | - | Sistema de gestión de bases de datos. |
+| **Eloquent ORM** | - | Mapeo de objetos relacional para interactuar con la base de datos. |
+| **Blade** | - | Motor de plantillas de Laravel. |
 
-## Security Vulnerabilities
+## 📊 Diagrama de la Base de Datos (E-R)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+La estructura de la base de datos es el núcleo del sistema, garantizando la integridad y relación entre las distintas entidades. Las relaciones principales son:
 
-## License
+  - Un `Cliente` puede tener muchos `Albaranes` y muchas `Facturas`.
+  - Una `Factura` pertenece a un `Cliente` y puede agrupar varios `Albaranes`.
+  - Un `Albaran` pertenece a un `Cliente` y, opcionalmente, a una `Factura`.
+  - Un `Albaran` está compuesto por uno o más `DetalleAlbaran`.
+  - Cada `DetalleAlbaran` está asociado a un `Producto`.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+<!-- end list -->
+
+```mermaid
+erDiagram
+    CLIENTES {
+        int id PK
+        string nombre_clinica
+        string direccion
+        string nif UK
+    }
+
+    PRODUCTOS {
+        int id PK
+        string nombre
+        decimal precio
+    }
+
+    FACTURAS {
+        int id PK
+        int cliente_id FK
+        string numero_factura UK
+        date fecha_factura
+        decimal total_a_pagar
+    }
+
+    ALBARANES {
+        int id PK
+        int cliente_id FK
+        int factura_id FK "Nullable"
+        string codigo_albaran UK
+        date fecha_envio
+        string nombre_paciente
+        decimal total_albaran
+    }
+
+    DETALLE_ALBARANES {
+        int id PK
+        int albaran_id FK
+        int producto_id FK
+        string nombre_producto
+        int unidades
+        decimal precio_unitario
+        decimal importe
+    }
+
+    CLIENTES ||--o{ FACTURAS : "tiene"
+    CLIENTES ||--o{ ALBARANES : "tiene"
+    FACTURAS ||--o{ ALBARANES : "contiene"
+    ALBARANES ||--o{ DETALLE_ALBARANES : "tiene"
+    PRODUCTOS ||--o{ DETALLE_ALBARANES : "es parte de"
+
+```
+
+## 🚀 Puesta en Marcha
+
+Para ejecutar este proyecto en un entorno de desarrollo local, sigue estos pasos:
+
+#### **1. Prerrequisitos**
+
+Asegúrate de tener instalados los siguientes programas:
+
+  * PHP 8.2 o superior
+  * Composer
+  * Node.js y npm
+  * Un servidor de base de datos (ej. MySQL)
+
+#### **2. Instalación**
+
+1.  **Clonar el repositorio:**
+
+    ```bash
+    git clone https://github.com/triano83/dental.git
+    cd dental
+    ```
+
+2.  **Instalar dependencias de PHP:**
+
+    ```bash
+    composer install
+    ```
+
+3.  **Instalar dependencias de Node.js:**
+
+    ```bash
+    npm install
+    ```
+
+4.  **Configurar el entorno:**
+    Copia el fichero de ejemplo `.env.example` y renómbralo a `.env`.
+
+    ```bash
+    cp .env.example .env
+    ```
+
+5.  **Generar la clave de la aplicación:**
+
+    ```bash
+    php artisan key:generate
+    ```
+
+6.  **Configurar la base de datos:**
+    Abre el fichero `.env` y configura las credenciales de tu base de datos:
+
+    ```
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=nombre_de_tu_bd
+    DB_USERNAME=tu_usuario
+    DB_PASSWORD=tu_contraseña
+    ```
+
+7.  **Ejecutar las migraciones:**
+    Esto creará todas las tablas en tu base de datos.
+
+    ```bash
+    php artisan migrate
+    ```
+
+8.  **Compilar los assets:**
+
+    ```bash
+    npm run dev
+    ```
+
+9.  **Iniciar el servidor de desarrollo:**
+
+    ```bash
+    php artisan serve
+    ```
+
+¡Listo\! Ahora puedes acceder a la aplicación en `http://127.0.0.1:8000`.
+
+## 🛣️ Rutas de la Aplicación
+
+El sistema define las siguientes rutas web para interactuar con los diferentes módulos:
+
+| Método HTTP | URI | Nombre de la Ruta | Acción del Controlador | Descripción |
+| :--- | :--- | :--- | :--- | :--- |
+| **Clientes** |
+| GET | `/clientes` | `clientes.index` | `ClienteController@index` | Muestra la lista de clientes. |
+| GET | `/clientes/create` | `clientes.create` | `ClienteController@create` | Muestra el formulario para crear un cliente. |
+| POST | `/clientes` | `clientes.store` | `ClienteController@store` | Guarda un nuevo cliente. |
+| GET | `/clientes/{cliente}` | `clientes.show` | `ClienteController@show` | Muestra los detalles de un cliente. |
+| GET | `/clientes/{cliente}/edit`| `clientes.edit` | `ClienteController@edit` | Muestra el formulario para editar un cliente. |
+| PUT/PATCH | `/clientes/{cliente}` | `clientes.update` | `ClienteController@update` | Actualiza un cliente. |
+| DELETE | `/clientes/{cliente}` | `clientes.destroy`| `ClienteController@destroy`| Elimina un cliente. |
+| **Productos** |
+| GET | `/productos` | `productos.index` | `ProductoController@index`| Muestra la lista de productos. |
+| ... | *(Rutas CRUD similares a Clientes)* | ... | ... | ... |
+| **Albaranes** |
+| GET | `/albaranes` | `albaranes.index` | `AlbaranController@index` | Muestra la lista de albaranes. |
+| GET | `/albaranes/create` | `albaranes.create` | `AlbaranController@create`| Formulario para crear albarán. |
+| POST | `/albaranes` | `albaranes.store` | `AlbaranController@store` | Guarda un nuevo albarán. |
+| GET | `/albaranes/{albaran}` | `albaranes.show` | `AlbaranController@show` | Muestra los detalles de un albarán. |
+| GET | `/albaranes/{albaran}/edit`| `albaranes.edit` | `AlbaranController@edit` | Formulario para editar un albarán. |
+| PUT | `/albaranes/{albaran}` | `albaranes.update` | `AlbaranController@update` | Actualiza un albarán. |
+| DELETE | `/albaranes/{albaran}` | `albaranes.destroy`| `AlbaranController@destroy`| Elimina un albarán. |
+| **Facturas** |
+| GET | `/facturas` | `facturas.index` | `FacturaController@index` | Muestra la lista de facturas. |
+| GET | `/facturas/generar-form`| `facturas.generar.form`| `FacturaController@showGenerateForm`| Muestra el formulario para generar facturas. |
+| POST | `/facturas/generar` | `facturas.generar` | `FacturaController@generarFacturas` | Procesa y genera una nueva factura. |
+| GET | `/facturas/{factura}` | `facturas.show` | `FacturaController@show` | Muestra los detalles de una factura. |
+
+## 📸 Capturas de Pantalla (Ejemplos)
+
+A continuación, se muestran algunas de las interfaces clave del sistema.
+
+#### **Listado de Albaranes**
+
+*Muestra todos los albaranes, su estado de facturación y las acciones rápidas.*
+
+#### **Creación de un Nuevo Albarán**
+
+*Formulario dinámico para añadir productos, calcular totales y aplicar descuentos en tiempo real.*
+
+#### **Detalle de la Factura**
+
+*Vista completa de una factura, incluyendo los datos del emisor, receptor y la lista de albaranes que la componen.*
+
+-----
+
+\<p align="center"\>
+Este README fue generado para demostrar las capacidades del proyecto S.M. Dental.
+\</p\>
